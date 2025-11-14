@@ -23,11 +23,11 @@ public class JournalEntryControllerV2 {
     }
 
     @PostMapping
-    public boolean createEntry(@RequestBody JournalEntry myEntry)
+    public JournalEntry createEntry(@RequestBody JournalEntry myEntry)
     {
         myEntry.setDate(LocalDateTime.now());
         journalEntryService.saveEntry(myEntry);
-        return true;
+        return myEntry;
     }
 
     @GetMapping("id/{myId}")
