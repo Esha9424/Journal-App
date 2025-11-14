@@ -11,7 +11,7 @@ public class JournalEntry {
    private String id;
     private String tittle;
     private String content;
-
+    private Date date;
     public Date getDate() {
         return date;
     }
@@ -20,7 +20,7 @@ public class JournalEntry {
         this.date = date;
     }
 
-    private Date date;
+
 
     public String getId() {
         return id;
