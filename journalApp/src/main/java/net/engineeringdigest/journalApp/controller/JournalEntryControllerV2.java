@@ -2,6 +2,7 @@ package net.engineeringdigest.journalApp.controller;
 
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.service.JournalEntryService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,24 +32,26 @@ public class JournalEntryControllerV2 {
     }
 
     @GetMapping("id/{myId}")
-    public JournalEntry getEntryById(@PathVariable Long myId)
+    public JournalEntry getEntryById(@PathVariable ObjectId myId)
     {
-
-        return null;
+       // orelse isiliye kyuki service file me ye method ka datatype optional h matlab kuchh ho bhi sakta h return ya nhi ,to bs return nhi kr sakte orelse krna hoga
+        return journalEntryService.findById(myId).orElse(null);
     }
 
     @DeleteMapping("id/{myId}")
-    public JournalEntry deleteEntryById(@PathVariable Long myId)
+    public boolean deleteEntryById(@PathVariable ObjectId myId)
     {
 
-        return null;
+         journalEntryService.deleteById(myId);
+         return true;
     }
 
     @PutMapping("id/{id}")
-    public JournalEntry updateEntryById(@PathVariable Long id, @RequestBody JournalEntry myEntry)
+    public JournalEntry updateEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry myEntry)
     {
+      JournalEntry old=journalEntryService.findById(id).orElse(null);
 
-        return null;
+
     }
 
 
