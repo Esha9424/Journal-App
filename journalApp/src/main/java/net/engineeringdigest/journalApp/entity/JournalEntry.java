@@ -1,7 +1,12 @@
 package net.engineeringdigest.journalApp.entity;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document
 public class JournalEntry {
-    private String id;
+   @Id
+   private String id;
     private String tittle;
     private String content;
 
