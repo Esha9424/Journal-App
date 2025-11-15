@@ -9,7 +9,8 @@ import java.util.Date;
 
 @Document(collection = "journal_entries")
 public class JournalEntry {
-   @Id
+
+    @Id
    private ObjectId id;
     private String tittle;
     private String content;

@@ -1,16 +1,16 @@
 package net.engineeringdigest.journalApp.controller;
 
+import net.engineeringdigest.journalApp.JournalApplication;
 import net.engineeringdigest.journalApp.entity.JournalEntry;
 import net.engineeringdigest.journalApp.service.JournalEntryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/journal")
@@ -19,44 +19,59 @@ public class JournalEntryControllerV2 {
     @Autowired
     private JournalEntryService journalEntryService;
     @GetMapping
-    public List<JournalEntry> getAll(){
-        return journalEntryService.getAll();
+    public ResponseEntity<?> getAll(){
+
+        List<JournalEntry> all= journalEntryService.getAll();
+        if (all!= null && !all.isEmpty())
+        {
+            return new ResponseEntity<>(all,HttpStatus.OK);
+        }
+        return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping
-    public JournalEntry createEntry(@RequestBody JournalEntry myEntry)
+    public ResponseEntity<JournalEntry> createEntry(@RequestBody JournalEntry myEntry)
     {
-        myEntry.setDate(LocalDateTime.now());
-        journalEntryService.saveEntry(myEntry);
-        return myEntry;
+        try {
+            myEntry.setDate(LocalDateTime.now());
+            journalEntryService.saveEntry(myEntry);
+            return new ResponseEntity<>(myEntry,HttpStatus.CREATED);
+        }catch (Exception e)
+        {
+            return new ResponseEntity<>( HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @GetMapping("id/{myId}")
-    public JournalEntry getEntryById(@PathVariable ObjectId myId)
+    public ResponseEntity<?> getEntryById(@PathVariable ObjectId myId)
     {
-       // orelse isiliye kyuki service file me ye method ka datatype optional h matlab kuchh ho bhi sakta h return ya nhi ,to bs return nhi kr sakte orelse krna hoga
-        return journalEntryService.findById(myId).orElse(null);
+        Optional<JournalEntry> journalEntry=journalEntryService.findById(myId);
+        if(journalEntry.isPresent()) {
+            return new ResponseEntity<>(journalEntry.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>( HttpStatus.NOT_FOUND);
     }
 
     @DeleteMapping("id/{myId}")
-    public boolean deleteEntryById(@PathVariable ObjectId myId)
+    public ResponseEntity<?> deleteEntryById(@PathVariable ObjectId myId)
     {
-
          journalEntryService.deleteById(myId);
-         return true;
+         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping("id/{id}")
-    public JournalEntry updateEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry)
+    public ResponseEntity<?>  updateEntryById(@PathVariable ObjectId id, @RequestBody JournalEntry newEntry)
     {
       JournalEntry old=journalEntryService.findById(id).orElse(null);
       if(old!=null)
      {
          old.setTittle(newEntry.getTittle()!=null && !newEntry.getTittle().equals("")? newEntry.getTittle(): old.getTittle());
          old.setContent(newEntry.getContent()!=null && !newEntry.getContent().equals("")? newEntry.getContent(): old.getContent());
+         journalEntryService.saveEntry(old);
+         return new ResponseEntity<>(old, HttpStatus.OK);
      }
-      journalEntryService.saveEntry(old);
-      return old;
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
